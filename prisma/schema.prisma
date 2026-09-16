@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  WORKER
+}
+
+model User {
+  id        String @id @default(uuid()) @db.Uuid
+  email     String @unique
+  password  String
+  firstName String
+  lastName  String
+  role      Role   @default(WORKER)
+
+  worker Worker?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Worker {
+  id          String  @id @default(uuid()) @db.Uuid
+  displayName String
+  bio         String?
+
+  userId String @unique @db.Uuid
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  workingHours WorkingHour[]
+  services     WorkerService[]
+  appointments Appointment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Customer {
+  id          String @id @default(uuid()) @db.Uuid
+  name        String
+  phoneNumber String
+
+  appointments Appointment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([phoneNumber])
+}
+
+model WorkingHour {
+  workerId String @db.Uuid
+
+  worker Worker @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  startTime DateTime
+  endTime   DateTime
+
+  @@id([workerId, startTime])
+}
+
+model Service {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  price       Float
+  duration    Int? // Duration in minutes
+
+  workers      WorkerService[]
+  appointments Appointment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WorkerService {
+  workerId  String @db.Uuid
+  serviceId String @db.Uuid
+
+  worker  Worker  @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@id([workerId, serviceId])
+  @@index([serviceId])
+}
+
+model Appointment {
+  id         String   @id @default(uuid()) @db.Uuid
+  customerId String   @db.Uuid
+  workerId   String   @db.Uuid
+  serviceId  String   @db.Uuid
+  startTime  DateTime
+  endTime    DateTime
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  worker   Worker   @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  service  Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([customerId])
+  @@index([workerId])
+  @@index([serviceId])
+}
