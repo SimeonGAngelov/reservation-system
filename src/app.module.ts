@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { createObserveModule } from '@nestjs/observe';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -15,6 +16,9 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       appKey: 'YOUR_APP_KEY',
       appSecret: 'YOUR_APP_SECRET',
       serviceId: 'reservation-system',
+    }),
+    ConfigModule.forRoot({
+      isGlobal: true
     }),
     AuthModule,
     PrismaModule,
