@@ -6,7 +6,6 @@ import { Prisma } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtPayload, Tokens } from './types';
-import { Role } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
