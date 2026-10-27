@@ -1,8 +1,9 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { ConfigService } from "@nestjs/config";
 import { Request } from "express";
+import { JwtPayload, JwtRefreshPayload } from "../types";
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
@@ -14,8 +15,13 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-refres
         });        
     } 
 
-    validate(req: Request, payload: any): any {
-        const refreshToken = req.get('authorization')?.replace('Bearer', '').trim();
+    validate(req: Request, payload: JwtPayload): JwtRefreshPayload {
+        const refreshToken = req.get('authorization')?.match(/^Bearer\s+(.+)$/i)?.[1];
+
+        if (!refreshToken) {
+            throw new UnauthorizedException('Invalid authorization header!');
+        }
+        
         return { ...payload, refreshToken };
     }
 }

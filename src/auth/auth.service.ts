@@ -23,6 +23,7 @@ export class AuthService {
                 data: {
                     ...dto,
                     //role: dto.role as Role,
+                    email: dto.email.trim().toLowerCase(),
                     password: hash
                 }
             });
@@ -118,15 +119,15 @@ export class AuthService {
             this.jwt.signAsync(
                 payload, 
                 {
-                    expiresIn: this.config.get('ACCESS_TOKEN_EXPIRATION_TIME'),
-                    secret: this.config.get('ACCESS_TOKEN_SECRET')
+                    expiresIn: this.config.getOrThrow('ACCESS_TOKEN_EXPIRATION_TIME'),
+                    secret: this.config.getOrThrow('ACCESS_TOKEN_SECRET')
                 }
             ),
             this.jwt.signAsync(
                 payload, 
                 {
-                    expiresIn: this.config.get('REFRESH_TOKEN_EXPIRATION_TIME'),
-                    secret: this.config.get('REFRESH_TOKEN_SECRET')
+                    expiresIn: this.config.getOrThrow('REFRESH_TOKEN_EXPIRATION_TIME'),
+                    secret: this.config.getOrThrow('REFRESH_TOKEN_SECRET')
                 }
             )
         ]);
