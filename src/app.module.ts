@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ServicesModule } from './services/services.module';
+import { WorkerModule } from './worker/worker.module';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -24,6 +25,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     AuthModule,
     PrismaModule,
     ServicesModule,
+    WorkerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
